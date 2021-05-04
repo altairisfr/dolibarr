@@ -218,7 +218,7 @@ class Productlot extends CommonObject
 		$sql .= ' '.(!isset($this->manufacturing_date) || dol_strlen($this->manufacturing_date) == 0 ? 'NULL' : "'".$this->db->idate($this->manufacturing_date)."'").',';
 		$sql .= ' '.(!isset($this->scrapping_date) || dol_strlen($this->scrapping_date) == 0 ? 'NULL' : "'".$this->db->idate($this->scrapping_date)."'").',';
 		$sql .= ' '.(!isset($this->commissionning_date) || dol_strlen($this->commissionning_date) == 0 ? 'NULL' : "'".$this->db->idate($this->commissionning_date)."'").',';
-		$sql .= ' '.(!isset($this->qc_frequency) ? 'NULL' : $this->qc_frequency).',';
+		$sql .= ' '.(!isset($this->qc_frequency) || dol_strlen($this->qc_frequency) == 0  ? 'NULL' : $this->qc_frequency).',';
 		// $sql .= ' '.(!isset($this->fk_qcstatus) || dol_strlen($this->fk_qcstatus) == 0 ? 'NULL' : $this->fk_qcstatus).',';
 
 		$sql .= ' '."'".$this->db->idate(dol_now())."'".',';

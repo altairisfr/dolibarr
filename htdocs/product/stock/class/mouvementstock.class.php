@@ -148,7 +148,7 @@ class MouvementStock extends CommonObject
 	 *  @param		int		$disablestockchangeforsubproduct	Disable stock change for sub-products of kit (usefull only if product is a subproduct)
 	 *	@return		int							<0 if KO, 0 if fk_product is null or product id does not exists, >0 if OK
 	 */
-	public function _create($user, $fk_product, $entrepot_id, $qty, $type, $price = 0, $label = '', $inventorycode = '', $datem = '', $eatby = '', $sellby = '', $batch = '', $skip_batch = false, $id_product_batch = 0, $disablestockchangeforsubproduct = 0)
+	public function _create($user, $fk_product, $entrepot_id, $qty, $type, $price = 0, $label = '', $inventorycode = '', $datem = '', $eatby = '', $sellby = '', $batch = '', $skip_batch = false, $id_product_batch = 0, $disablestockchangeforsubproduct = 0, $fk_qcstatus='')
 	{
 		// phpcs:disable
 		global $conf, $langs;
@@ -157,7 +157,7 @@ class MouvementStock extends CommonObject
 		require_once DOL_DOCUMENT_ROOT.'/product/stock/class/productlot.class.php';
 
 		$error = 0;
-		dol_syslog(get_class($this)."::_create start userid=$user->id, fk_product=$fk_product, warehouse_id=$entrepot_id, qty=$qty, type=$type, price=$price, label=$label, inventorycode=$inventorycode, datem=".$datem.", eatby=".$eatby.", sellby=".$sellby.", batch=".$batch.", skip_batch=".$skip_batch);
+		dol_syslog(get_class($this)."::_create start userid=$user->id, fk_product=$fk_product, warehouse_id=$entrepot_id, qty=$qty, type=$type, price=$price, label=$label, inventorycode=$inventorycode, datem=".$datem.", eatby=".$eatby.", sellby=".$sellby.", batch=".$batch.", skip_batch=".$skip_batch.", fk_qcstatus=$fk_qcstatus");
 
 		// start hook at beginning
                 global $action, $hookmanager;
@@ -178,6 +178,7 @@ class MouvementStock extends CommonObject
 		'eatby'            => &$eatby,
 		'sellby'           => &$sellby,
 		'batch'            => &$batch,
+		'fk_qcstatus'      => &$fk_qcstatus,
 		'skip_batch'       => &$skip_batch,
 		'id_product_batch' => &$id_product_batch
 			);
@@ -223,6 +224,7 @@ class MouvementStock extends CommonObject
 		$this->inventorycode = $inventorycode;
 		$this->datem = $now;
 		$this->batch = $batch;
+        $this->fk_qcstatus = $fk_qcstatus;
 
 		$mvid = 0;
 
@@ -587,10 +589,10 @@ class MouvementStock extends CommonObject
 				{
 					if ($id_product_batch > 0)
 					{
-						$result = $this->createBatch($id_product_batch, $qty);
+						$result = $this->createBatch($id_product_batch, $qty, $fk_qcstatus);
 					} else {
 						$param_batch = array('fk_product_stock' =>$fk_product_stock, 'batchnumber'=>$batch);
-						$result = $this->createBatch($param_batch, $qty);
+						$result = $this->createBatch($param_batch, $qty, $fk_qcstatus);
 					}
 					if ($result < 0) $error++;
 				}
@@ -921,7 +923,7 @@ class MouvementStock extends CommonObject
 	 * @param	int			$qty	      Quantity of product with batch number. May be a negative amount.
 	 * @return 	int   				      <0 if KO, else return productbatch id
 	 */
-	private function createBatch($dluo, $qty)
+	private function createBatch($dluo, $qty, $fk_qcstatus)
 	{
 		global $user;
 
@@ -973,6 +975,7 @@ class MouvementStock extends CommonObject
 				$pdluo->eatby = empty($dluo['eatby']) ? '' : $dluo['eatby'];		// No more used. Now eatby date is store in table of lot, no more into prouct_batch table.
 				$pdluo->sellby = empty($dluo['sellby']) ? '' : $dluo['sellby'];		// No more used. Now sellby date is store in table of lot, no more into prouct_batch table.
 				$pdluo->batch = $vbatchnumber;
+				$pdluo->fk_qcstatus = $fk_qcstatus;
 
 				$result = $pdluo->create($user, 1);
 				if ($result < 0)

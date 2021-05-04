@@ -73,6 +73,7 @@ $d_eatby = dol_mktime(0, 0, 0, GETPOST('eatbymonth', 'int'), GETPOST('eatbyday',
 $d_sellby = dol_mktime(0, 0, 0, GETPOST('sellbymonth', 'int'), GETPOST('sellbyday', 'int'), GETPOST('sellbyyear', 'int'));
 $pdluoid = GETPOST('pdluoid', 'int');
 $batchnumber = GETPOST('batch_number', 'san_alpha');
+$fk_qcstatus = GETPOST('fk_qcstatus', 'alpha');
 if (!empty($batchnumber)) {
 	$batchnumber = trim($batchnumber);
 }
@@ -266,7 +267,8 @@ if ($action == "correct_stock" && !$cancel) {
 					GETPOST('inventorycode', 'alphanohtml'),
 					$origin_element,
 					$origin_id,
-					$disablestockchangeforsubproduct
+					$disablestockchangeforsubproduct,
+					$fk_qcstatus
 				); // We do not change value of stock for a correction
 			} else {
 				$result = $object->correct_stock(
@@ -353,6 +355,7 @@ if ($action == "transfert_stock" && !$cancel) {
 					if ($result) {
 						$srcwarehouseid = $pdluo->warehouseid;
 						$batch = $pdluo->batch;
+						$fk_qcstatus = $pdluo->fk_qcstatus;
 						$eatby = $pdluo->eatby;
 						$sellby = $pdluo->sellby;
 					} else {
@@ -380,7 +383,11 @@ if ($action == "transfert_stock" && !$cancel) {
 						$eatby,
 						$sellby,
 						$batch,
-						GETPOST('inventorycode', 'alphanohtml')
+						GETPOST('inventorycode', 'alphanohtml'),
+						'',
+						null,
+						0,
+						$fk_qcstatus
 					);
 					if ($result1 < 0) {
 						$error++;
@@ -398,7 +405,11 @@ if ($action == "transfert_stock" && !$cancel) {
 						$eatby,
 						$sellby,
 						$batch,
-						GETPOST('inventorycode', 'alphanohtml')
+						GETPOST('inventorycode', 'alphanohtml'),
+						'',
+						null,
+						0,
+						$fk_qcstatus
 					);
 					if ($result2 < 0) {
 						$error++;
@@ -470,6 +481,7 @@ if ($action == 'updateline' && GETPOST('save') == $langs->trans("Save")) {
 				$d_eatby = dol_mktime(0, 0, 0, $_POST['eatbymonth'], $_POST['eatbyday'], $_POST['eatbyyear']);
 				$d_sellby = dol_mktime(0, 0, 0, $_POST['sellbymonth'], $_POST['sellbyday'], $_POST['sellbyyear']);
 				$pdluo->batch = $batchnumber;
+				$pdluo->fk_qcstatus = $fk_qcstatus;
 				$pdluo->eatby = $d_eatby;
 				$pdluo->sellby = $d_sellby;
 				$result = $pdluo->update($user);
@@ -954,6 +966,7 @@ if (!$variants) {
 				foreach ($details as $pdluo) {
 					$product_lot_static->id = $pdluo->lotid;
 					$product_lot_static->batch = $pdluo->batch;
+					$product_lot_static->fk_qcstatus = $pdluo->fk_qcstatus;
 					$product_lot_static->eatby = $pdluo->eatby;
 					$product_lot_static->sellby = $pdluo->sellby;
 
