@@ -47,7 +47,6 @@ class Productbatch extends CommonObject
 	public $sellby = '';
 	public $eatby = '';
 	public $batch = '';
-	public $fk_qcstatus;
 	public $qty;
 	public $warehouseid;
 
@@ -93,7 +92,6 @@ class Productbatch extends CommonObject
 		$sql .= "sellby,";				// no more used
 		$sql .= "eatby,";				// no more used
 		$sql .= "batch,";
-		$sql .= "fk_qcstatus,";
 		$sql .= "qty,";
 		$sql .= "import_key";
 		$sql .= ") VALUES (";
@@ -101,7 +99,6 @@ class Productbatch extends CommonObject
 		$sql .= " ".(!isset($this->sellby) || dol_strlen($this->sellby) == 0 ? 'NULL' : "'".$this->db->idate($this->sellby)."'").",";		// no more used
 		$sql .= " ".(!isset($this->eatby) || dol_strlen($this->eatby) == 0 ? 'NULL' : "'".$this->db->idate($this->eatby)."'").",";			// no more used
 		$sql .= " ".(!isset($this->batch) ? 'NULL' : "'".$this->db->escape($this->batch)."'").",";
-		$sql .= " ".(!isset($this->fk_qcstatus) ? 'NULL' : "'".$this->db->escape($this->fk_qcstatus)."'").",";
 		$sql .= " ".(!isset($this->qty) ? 'NULL' : $this->qty).",";
 		$sql .= " ".(!isset($this->import_key) ? 'NULL' : "'".$this->db->escape($this->import_key)."'")."";
 		$sql .= ")";
@@ -145,7 +142,6 @@ class Productbatch extends CommonObject
 		$sql .= " t.sellby as oldsellby,";
 		$sql .= " t.eatby as oldeatby,";
 		$sql .= " t.batch,";
-		$sql .= " t.fk_qcstatus,";
 		$sql .= " t.qty,";
 		$sql .= " t.import_key,";
 		$sql .= " w.fk_entrepot,";
@@ -169,7 +165,6 @@ class Productbatch extends CommonObject
 				$this->sellby = $this->db->jdate($obj->sellby ? $obj->sellby : $obj->oldsellby);
 				$this->eatby = $this->db->jdate($obj->eatby ? $obj->eatby : $obj->oldeatby);
 				$this->batch = $obj->batch;
-				$this->fk_qcstatus = $obj->fk_qcstatus;
 				$this->qty = $obj->qty;
 				$this->import_key = $obj->import_key;
 				$this->warehouseid = $obj->fk_entrepot;
@@ -209,7 +204,6 @@ class Productbatch extends CommonObject
 		$sql .= " sellby=".(dol_strlen($this->sellby) != 0 ? "'".$this->db->idate($this->sellby)."'" : 'null').",";
 		$sql .= " eatby=".(dol_strlen($this->eatby) != 0 ? "'".$this->db->idate($this->eatby)."'" : 'null').",";
 		$sql .= " batch=".(isset($this->batch) ? "'".$this->db->escape($this->batch)."'" : "null").",";
-		$sql .= " fk_qcstatus=".(isset($this->fk_qcstatus) ? "'".$this->db->escape($this->fk_qcstatus)."'" : "null").",";
 		$sql .= " qty=".(isset($this->qty) ? $this->qty : "null").",";
 		$sql .= " import_key=".(isset($this->import_key) ? "'".$this->db->escape($this->import_key)."'" : "null")."";
 		$sql .= " WHERE rowid=".((int) $this->id);

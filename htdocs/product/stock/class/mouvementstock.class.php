@@ -449,7 +449,7 @@ class MouvementStock extends CommonObject
 
 			$sql = "INSERT INTO ".MAIN_DB_PREFIX."stock_mouvement(";
 			$sql .= " datem, fk_product, batch, eatby, sellby,";
-			$sql .= " fk_entrepot, value, type_mouvement, fk_user_author, label, inventorycode, price, fk_origin, origintype, fk_projet";
+			$sql .= " fk_entrepot, value, type_mouvement, fk_user_author, label, inventorycode, price, fk_origin, origintype, fk_projet, fk_qcstatus";
 			$sql .= ")";
 			$sql .= " VALUES ('".$this->db->idate($now)."', ".$this->product_id.", ";
 			$sql .= " ".($batch ? "'".$this->db->escape($batch)."'" : "null").", ";
@@ -462,7 +462,8 @@ class MouvementStock extends CommonObject
 			$sql .= " ".price2num($price).",";
 			$sql .= " ".$fk_origin.",";
 			$sql .= " '".$this->db->escape($origintype)."',";
-			$sql .= " ".$fk_project;
+			$sql .= " ".$fk_project.", ";
+			$sql .= " ".($fk_qcstatus ? "'".$this->db->escape($fk_qcstatus)."'" : "null");
 			$sql .= ")";
 
 			dol_syslog(get_class($this)."::_create insert record into stock_mouvement", LOG_DEBUG);
@@ -589,10 +590,10 @@ class MouvementStock extends CommonObject
 				{
 					if ($id_product_batch > 0)
 					{
-						$result = $this->createBatch($id_product_batch, $qty, $fk_qcstatus);
+						$result = $this->createBatch($id_product_batch, $qty);
 					} else {
 						$param_batch = array('fk_product_stock' =>$fk_product_stock, 'batchnumber'=>$batch);
-						$result = $this->createBatch($param_batch, $qty, $fk_qcstatus);
+						$result = $this->createBatch($param_batch, $qty);
 					}
 					if ($result < 0) $error++;
 				}
@@ -684,6 +685,7 @@ class MouvementStock extends CommonObject
 		$sql .= " t.eatby,";
 		$sql .= " t.sellby,";
 		$sql .= " t.fk_projet as fk_project";
+		$sql .= " t.fk_qcstatus";
 		$sql .= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql .= ' WHERE 1 = 1';
 		//if (null !== $ref) {
@@ -717,6 +719,7 @@ class MouvementStock extends CommonObject
 				$this->eatby = $this->db->jdate($obj->eatby);
 				$this->sellby = $this->db->jdate($obj->sellby);
 				$this->fk_project = $obj->fk_project;
+				$this->fk_project = $obj->fk_qcstatus;
 			}
 
 			// Retrieve all extrafield
@@ -923,7 +926,7 @@ class MouvementStock extends CommonObject
 	 * @param	int			$qty	      Quantity of product with batch number. May be a negative amount.
 	 * @return 	int   				      <0 if KO, else return productbatch id
 	 */
-	private function createBatch($dluo, $qty, $fk_qcstatus)
+	private function createBatch($dluo, $qty)
 	{
 		global $user;
 
@@ -975,7 +978,6 @@ class MouvementStock extends CommonObject
 				$pdluo->eatby = empty($dluo['eatby']) ? '' : $dluo['eatby'];		// No more used. Now eatby date is store in table of lot, no more into prouct_batch table.
 				$pdluo->sellby = empty($dluo['sellby']) ? '' : $dluo['sellby'];		// No more used. Now sellby date is store in table of lot, no more into prouct_batch table.
 				$pdluo->batch = $vbatchnumber;
-				$pdluo->fk_qcstatus = $fk_qcstatus;
 
 				$result = $pdluo->create($user, 1);
 				if ($result < 0)

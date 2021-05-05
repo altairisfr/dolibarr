@@ -131,7 +131,8 @@ $arrayfields = array(
 	'origin'=>array('label'=>"Origin", 'checked'=>1, 'position'=>155),
 	'm.fk_projet'=>array('label'=>'Project', 'checked'=>0, 'position'=>180),
 	'm.value'=>array('label'=>"Qty", 'checked'=>1, 'position'=>200),
-	'm.price'=>array('label'=>"UnitPurchaseValue", 'checked'=>0, 'position'=>210)
+	'm.price'=>array('label'=>"UnitPurchaseValue", 'checked'=>0, 'position'=>210),
+	'm.fk_qcstatus'=>array('label'=>"Status", 'checked'=>0, 'position'=>250, 'enabled'=>(!empty($conf->productbatch->enabled)))
 	//'m.datec'=>array('label'=>"DateCreation", 'checked'=>0, 'position'=>500),
 	//'m.tms'=>array('label'=>"DateModificationShort", 'checked'=>0, 'position'=>500)
 );
@@ -481,6 +482,7 @@ $sql .= " m.rowid as mid, m.value as qty, m.datem, m.fk_user_author, m.label, m.
 $sql .= " m.batch, m.price,";
 $sql .= " m.type_mouvement,";
 $sql .= " m.fk_projet as fk_project,";
+$sql .= " m.fk_qcstatus,";
 $sql .= " pl.rowid as lotid, pl.eatby, pl.sellby,";
 $sql .= " u.login, u.photo, u.lastname, u.firstname, u.email as user_email, u.statut as user_status";
 // Add fields from extrafields
@@ -986,6 +988,13 @@ if ($resql) {
 		print '</td>';
 	}
 
+	if (!empty($arrayfields['m.fk_qcstatus']['checked'])) {
+		// Price
+		print '<td class="liste_titre" align="left">';
+		print '&nbsp; ';
+		print '</td>';
+	}
+
 	// Extra fields
 	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
 
@@ -1059,6 +1068,9 @@ if ($resql) {
 	}
 	if (!empty($arrayfields['m.price']['checked'])) {
 		print_liste_field_titre($arrayfields['m.price']['label'], $_SERVER["PHP_SELF"], "m.price", "", $param, '', $sortfield, $sortorder, 'right ');
+	}
+	if (!empty($arrayfields['m.fk_qcstatus']['checked'])) {
+		print_liste_field_titre($arrayfields['m.fk_qcstatus']['label'], $_SERVER["PHP_SELF"], "m.fk_qcstatus", "", $param, '', $sortfield, $sortorder, 'right ');
 	}
 
 	// Extra fields
@@ -1220,6 +1232,14 @@ if ($resql) {
 			print '<td class="right">';
 			if ($objp->price != 0) {
 				print price($objp->price);
+			}
+			print '</td>';
+		}
+		if (!empty($arrayfields['m.fk_qcstatus']['checked'])) {
+			// Price
+			print '<td class="right">';
+			if ($objp->fk_qcstatus) {
+				print $objp->fk_qcstatus;
 			}
 			print '</td>';
 		}
