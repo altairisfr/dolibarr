@@ -195,32 +195,6 @@ class CompanyPaymentMode extends CommonObject
 	// END MODULEBUILDER PROPERTIES
 
 
-
-	// If this object has a subtable with lines
-
-	/**
-	 * @var string    Name of subtable line
-	 */
-	//public $table_element_line = 'companypaymentmodedet';
-	/**
-	 * @var string    Field with ID of parent key if this field has a parent
-	 */
-	//public $fk_element = 'fk_companypaymentmode';
-	/**
-	 * @var string    Name of subtable class that manage subtable lines
-	 */
-	//public $class_element_line = 'CompanyPaymentModeline';
-	/**
-	 * @var array	List of child tables. To test if we can delete object.
-	 */
-	//protected $childtables=array();
-	/**
-	 * @var CompanyPaymentModeLine[]     Array of subtable lines
-	 */
-	//public $lines = array();
-
-
-
 	/**
 	 * Constructor
 	 *
@@ -235,7 +209,7 @@ class CompanyPaymentMode extends CommonObject
 		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) {
 			$this->fields['rowid']['visible'] = 0;
 		}
-		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) {
+		if (!isModEnabled('multicompany') && isset($this->fields['entity'])) {
 			$this->fields['entity']['enabled'] = 0;
 		}
 	}
@@ -329,7 +303,7 @@ class CompanyPaymentMode extends CommonObject
 		// For backward compatibility
 		$this->iban = $this->iban_prefix;
 
-		//if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
+		//if ($result > 0 && !empty($this->table_element_line)) $this->fetchLines();
 		return $result;
 	}
 

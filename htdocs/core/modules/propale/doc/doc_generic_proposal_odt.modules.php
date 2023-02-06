@@ -46,9 +46,9 @@ class doc_generic_proposal_odt extends ModelePDFPropales
 
 	/**
 	 * @var array Minimum version of PHP required by module.
-	 * e.g.: PHP ≥ 5.6 = array(5, 6)
+	 * e.g.: PHP ≥ 7.0 = array(7, 0)
 	 */
-	public $phpmin = array(5, 6);
+	public $phpmin = array(7, 0);
 
 	/**
 	 * @var string Dolibarr version of the loaded document
@@ -123,7 +123,7 @@ class doc_generic_proposal_odt extends ModelePDFPropales
 		$texte .= '<input type="hidden" name="page_y" value="">';
 		$texte .= '<input type="hidden" name="action" value="setModuleOptions">';
 		$texte .= '<input type="hidden" name="param1" value="PROPALE_ADDON_PDF_ODT_PATH">';
-		if ($conf->global->MAIN_PROPAL_CHOOSE_ODT_DOCUMENT > 0) {
+		if (getDolGlobalInt("MAIN_PROPAL_CHOOSE_ODT_DOCUMENT") > 0) {
 			$texte .= '<input type="hidden" name="param2" value="PROPALE_ADDON_PDF_ODT_DEFAULT">';
 			$texte .= '<input type="hidden" name="param3" value="PROPALE_ADDON_PDF_ODT_TOBILL">';
 			$texte .= '<input type="hidden" name="param4" value="PROPALE_ADDON_PDF_ODT_CLOSED">';
@@ -187,24 +187,24 @@ class doc_generic_proposal_odt extends ModelePDFPropales
 			$texte .= '</div>';
 
 			// Set default template for different status of proposal
-			if ($conf->global->MAIN_PROPAL_CHOOSE_ODT_DOCUMENT > 0) {
+			if (getDolGlobalInt("MAIN_PROPAL_CHOOSE_ODT_DOCUMENT") > 0) {
 				// Model for creation
 				$list = ModelePDFPropales::liste_modeles($this->db);
-				$texte .= '<table width="50%;">';
+				$texte .= '<table width="50%">';
 				$texte .= '<tr>';
-				$texte .= '<td width="60%;">'.$langs->trans("DefaultModelPropalCreate").'</td>';
+				$texte .= '<td width="60%">'.$langs->trans("DefaultModelPropalCreate").'</td>';
 				$texte .= '<td colspan="">';
 				$texte .= $form->selectarray('value2', $list, $conf->global->PROPALE_ADDON_PDF_ODT_DEFAULT);
 				$texte .= "</td></tr>";
 
 				$texte .= '<tr>';
-				$texte .= '<td width="60%;">'.$langs->trans("DefaultModelPropalToBill").'</td>';
+				$texte .= '<td width="60%">'.$langs->trans("DefaultModelPropalToBill").'</td>';
 				$texte .= '<td colspan="">';
 				$texte .= $form->selectarray('value3', $list, $conf->global->PROPALE_ADDON_PDF_ODT_TOBILL);
 				$texte .= "</td></tr>";
 				$texte .= '<tr>';
 
-				$texte .= '<td width="60%;">'.$langs->trans("DefaultModelPropalClosed").'</td>';
+				$texte .= '<td width="60%">'.$langs->trans("DefaultModelPropalClosed").'</td>';
 				$texte .= '<td colspan="">';
 				$texte .= $form->selectarray('value4', $list, $conf->global->PROPALE_ADDON_PDF_ODT_CLOSED);
 				$texte .= "</td></tr>";
@@ -307,11 +307,11 @@ class doc_generic_proposal_odt extends ModelePDFPropales
 			if (file_exists($dir)) {
 				//print "srctemplatepath=".$srctemplatepath;	// Src filename
 				$newfile = basename($srctemplatepath);
-				$newfiletmp = preg_replace('/\.od(t|s)/i', '', $newfile);
+				$newfiletmp = preg_replace('/\.od[ts]/i', '', $newfile);
 				$newfiletmp = preg_replace('/template_/i', '', $newfiletmp);
 				$newfiletmp = preg_replace('/modele_/i', '', $newfiletmp);
 
-				$newfiletmp = $objectref.'_'.$newfiletmp;
+				$newfiletmp = $objectref . '_' . $newfiletmp;
 
 				// Get extension (ods or odt)
 				$newfileformat = substr($newfile, strrpos($newfile, '.') + 1);
@@ -320,11 +320,11 @@ class doc_generic_proposal_odt extends ModelePDFPropales
 					if ($format == '1') {
 						$format = '%Y%m%d%H%M%S';
 					}
-					$filename = $newfiletmp.'-'.dol_print_date(dol_now(), $format).'.'.$newfileformat;
+					$filename = $newfiletmp . '-' . dol_print_date(dol_now(), $format) . '.' . $newfileformat;
 				} else {
-					$filename = $newfiletmp.'.'.$newfileformat;
+					$filename = $newfiletmp . '.' . $newfileformat;
 				}
-				$file = $dir.'/'.$filename;
+				$file = $dir . '/' . $filename;
 				//print "newdir=".$dir;
 				//print "newfile=".$newfile;
 				//print "file=".$file;
@@ -332,8 +332,8 @@ class doc_generic_proposal_odt extends ModelePDFPropales
 
 				dol_mkdir($conf->propal->multidir_temp[$object->entity]);
 				if (!is_writable($conf->propal->dir_temp)) {
-					$this->error = "Failed to write in temp directory ".$conf->propal->dir_temp;
-					dol_syslog('Error in write_file: '.$this->error, LOG_ERR);
+					$this->error = $langs->transnoentities("ErrorFailedToWriteInTempDirectory", $conf->propal->dir_temp);
+					dol_syslog('Error in write_file: ' . $this->error, LOG_ERR);
 					return -1;
 				}
 
