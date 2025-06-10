@@ -409,7 +409,14 @@ if (!$error && $massaction == 'confirm_presend') {
 				if (GETPOST('addmaindocfile')) {
 					// TODO Use future field $objectobj->fullpathdoc to know where is stored default file
 					// TODO If not defined, use $objectobj->model_pdf (or default invoice config) to know what is template to use to regenerate doc.
-					$filename = dol_sanitizeFileName($objectobj->ref).'.pdf';
+
+					// Defined modele of doc
+					$last_main_doc_file = $objectobj->last_main_doc;
+					$directdownloadlink = $objectobj->getLastMainDocLink($objectobj->element);
+					$ref_pdf = pathinfo($last_main_doc_file, PATHINFO_FILENAME); // Retrieves the name of external or internal PDF
+
+					$filename = dol_sanitizeFileName($ref_pdf).'.pdf';
+
 					$subdir = '';
 					// TODO Set subdir to be compatible with multi levels dir trees
 					// $subdir = get_exdir($objectobj->id, 2, 0, 0, $objectobj, $objectobj->element)
