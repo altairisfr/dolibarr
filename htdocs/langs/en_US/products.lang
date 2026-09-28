@@ -176,7 +176,10 @@ ProductIsUsed=This product is used
 NewRefForClone=Ref. of new product/service
 SellingPrices=Selling prices
 BuyingPrices=Buying prices
-CustomerPrices=Customer prices
+CustomerPrices
+CustomerPerPrices=Customer per prices
+MultiPrices=Multi-prices
+MultiPricesAndCustomerPerPrices=multi-prices and customer per prices
 SuppliersPrices=Vendor prices
 SuppliersPricesOfProductsOrServices=Vendor prices (of products or services)
 CustomsCode=Customs nomenclature
